@@ -13,7 +13,7 @@ export default class Aluno extends Model {
           },
         },
       },
-      sobrenome: {
+      Sobrenome: {
         type: Sequelize.STRING,
         defaultValue: '',
         validate: {

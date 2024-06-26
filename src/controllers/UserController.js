@@ -8,8 +8,14 @@ class UserController {
       const { id, nome, email } = novoUser;
       return res.json({ id, nome, email });
     } catch (e) {
-      return res.status(409).json({
-        errors: e.errors.map((err) => err.message),
+      if (e.errors) {
+        return res.status(409).json({
+          errors: e.errors.map((err) => err.message),
+        });
+      }
+      console.error(e);
+      return res.status(500).json({
+        errors: ['Erro interno do servidor'],
       });
     }
   }
@@ -19,7 +25,10 @@ class UserController {
       const users = await User.findAll({ attributes: ['id', 'nome', 'email'] });
       return res.json(users);
     } catch (e) {
-      return res.json(null);
+      console.error(e);
+      return res.status(500).json({
+        errors: ['Erro interno do servidor'],
+      });
     }
   }
 
@@ -27,12 +36,19 @@ class UserController {
     try {
       const user = await User.findByPk(req.params.id);
 
+      if (!user) {
+        return res.status(404).json({
+          errors: ['Usuário não encontrado'],
+        });
+      }
+
       const { id, nome, email } = user;
 
       return res.json({ id, nome, email });
     } catch (e) {
-      return res.status(409).json({
-        errors: e.errors.map((err) => err.message),
+      console.error(e);
+      return res.status(500).json({
+        errors: ['Erro interno do servidor'],
       });
     }
   }
@@ -56,8 +72,14 @@ class UserController {
         novo: { id, nome, email },
       });
     } catch (e) {
-      return res.status(409).json({
-        errors: e.errors.map((err) => err.message),
+      if (e.errors) {
+        return res.status(409).json({
+          errors: e.errors.map((err) => err.message),
+        });
+      }
+      console.error(e);
+      return res.status(500).json({
+        errors: ['Erro interno do servidor'],
       });
     }
   }
@@ -72,12 +94,18 @@ class UserController {
         });
       }
 
-      await user.destroy(req.body);
+      await user.destroy();
 
       return res.json(user);
     } catch (e) {
-      return res.status(409).json({
-        errors: e.errors.map((err) => err.message),
+      if (e.errors) {
+        return res.status(409).json({
+          errors: e.errors.map((err) => err.message),
+        });
+      }
+      console.error(e);
+      return res.status(500).json({
+        errors: ['Erro interno do servidor'],
       });
     }
   }
